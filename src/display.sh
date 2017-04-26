@@ -1,0 +1,84 @@
+#!/bin/bash
+
+BES_TERM_WIDTH=105
+   BES_NOCOLOR=0
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if [ "$BES_NOCOLOR" -eq 0 ]; then
+             Cok="\033[0;38;5;37m";            Cko="\033[0;38;5;217m"
+            Coff="\033[m";                  Ctitle="\033[1;48;5;23;1;38;5;15m"
+            Cspe="\033[1;38;5;223m";         Citem="\033[1;38;5;214m"
+            Cval="\033[1;38;5;215m";          Cusa="\033[1;38;5;214m"
+            Cbra="\033[1;38;5;203m";         Crepo="\033[1;38;5;223m"
+           Cmeta="\033[1;38;5;30m";          Ctext="\033[1;38;5;30m"
+            Copt="\033[1;38;5;81m";           Csep="\033[1;38;5;241m"
+            Cerr="\033[1;38;5;196m";          Ccom="\033[0;38;5;139m"
+fi
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bes.echo(){
+    local      msg=${1:-''}
+    local isAction=${2:-'0'}
+    local   symbol=${3:-' *'}
+    if [ ! "$BES_NOCOLOR" = 1 ]; then
+        local   c=$Cko
+        if [ -z "$isAction" ] || [ "$isAction" = 1 ]; then
+            c=$Cok
+        fi
+        if [ ! "$isAction" = 0 ]; then
+            c=" $Citem$symbol $c"
+        fi
+        echo -e " $c$msg$Coff"
+    else
+        if [ ! "$isAction" = 0 ]; then
+            msg=" $symbol $msg"
+        fi
+        echo -e "$msg"
+    fi
+}
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bes.echo.action(){
+    bes.echo "$1" 1
+}
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bes.echo.keyval(){
+    local c=': '
+    if [ ! "$BES_NOCOLOR" = 1 ]; then
+        c="$Citem: ${Cval}"
+    fi
+    bes.echo "  $1 $c$2" 1 " "
+}
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bes.echo.state(){
+    if [ "$1" = 0 ]; then
+        echo "      done !"
+    else
+        echo "      fail !"
+    fi
+}
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bes.echo.error(){
+    echo -e "\n${Cerr}    error : ${Coff}\n\t$1 ${Coff}\n"
+}
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bes.sepline(){
+    local  char=${1:-'_'}
+    local width=${2:-$BES_TERM_WIDTH}
+    echo -ne "${Csep} "
+    printf "%0.s$char" $(seq 1 $width)
+    echo -e "${Coff}"
+}
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bes.title(){
+    local     msg=${1:-''}
+    local version=${2:-''}
+    local  author=${3:-'a-Sansara'}
+    if [ ! -z "$2" ]; then
+        msg="$msg ${Cval}v$version"
+    fi
+    local     len="$1${version}license : GNU GPL v3   author:$author"
+    bes.sepline
+    echo -ne "\n  $Ctitle   $msg   $Coff"
+    printf "%0.s " $(seq 1 $(($BES_TERM_WIDTH-${#len}-15)))
+    echo -e " ${Cmeta}license : ${Coff}GNU GPL v3   ${Cmeta}author : ${Cval}$author"
+    bes.sepline
+}

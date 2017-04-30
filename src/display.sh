@@ -22,17 +22,17 @@ bes.echo(){
     local isAction=${2:-'0'}
     local   symbol=${3:-' *'}
     if [ ! "$BES_NOCOLOR" = 1 ]; then
-        local   c=$Cok
+        local   c=" "
         if [ -z "$isAction" ] || [ "$isAction" = 1 ]; then
             c=$Caction
         fi
         if [ ! "$isAction" = 0 ]; then
-            c="  $Citem$symbol $c"
+            c="   $Citem$symbol $c"
         fi
         echo -e " $c$msg$Coff"
     else
         if [ ! "$isAction" = 0 ]; then
-            msg="  $symbol $msg"
+            msg="   $symbol $msg"
         fi
         echo -e "$msg"
     fi
@@ -62,6 +62,15 @@ bes.echo.state(){
         echo -e "${Cdone}  OK  ${Coff}"
     else
         echo -e "${Cfail}  KO  ${Coff}"
+    fi
+}
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bes.echo.rs(){
+    local rs=${1:-0}
+    if [ "$rs" -eq 0 ]; then
+        echo -e "\n  ${Cdone}  done  ${Coff}"
+    else 
+        echo -e "\n  ${Cfail}  failed  ${Coff}"
     fi
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

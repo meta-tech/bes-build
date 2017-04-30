@@ -9,7 +9,7 @@ bes.build(){
             bes.echo.state $?
         fi
         if [ -f "$APP_BIN" ]; then
-            if [ "$1" = "-s" ]; then
+            if [ "$1" = "backup" ] || [ "$1" = "-b" ]; then
                 bes.echo.action "backup last build to ${Coff}dist/$(date +%y%m%d)-$APP_NAME${Coff}"
                 mv $APP_BIN $APP_DIR/dist/$(date +%y%m%d)-$APP_NAME
             else
@@ -22,21 +22,22 @@ bes.build(){
         bes.echo.action "reading ${Coff}src/"
         for entry in "$APP_DIR/src"/*.sh; do
             if [ "$(basename $entry)" != "main.sh" ]; then
-                bes.echo "      - appending ${Coff}src/$(basename $entry)"
+                bes.echo "      ${Cspe}- ${Cok}appending ${Coff}src/$(basename $entry)"
                 tail -n +2 "$entry" >> "$APP_BIN"
             fi
         done
         if [ -f "$APP_DIR/src/main.sh" ]; then
             tail -n +2 "$APP_DIR/src/main.sh" >> "$APP_BIN"
-            bes.echo "      - appending ${Coff}src/main.sh"
+            bes.echo "      ${Cspe}- ${Cok}appending ${Coff}src/main.sh"
         fi
         bes.echo.state 0
         bes.echo.action "set execution mode"
         chmod +x $APP_BIN
-        bes.echo.state $?
+        done=$?
+        bes.echo.state $done
+        bes.echo.rs $done
     else
         bes.echo.error "no src/ directory. exit"
         bes.echo.state 1
     fi
-    echo
 }

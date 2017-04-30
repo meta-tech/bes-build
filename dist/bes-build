@@ -10,7 +10,7 @@ bes.build(){
         fi
         if [ -f "$APP_BIN" ]; then
             if [ "$1" = "-s" ]; then
-                bes.echo.action "backup last build ${Coff}dist/$(date +%y%m%d)-$APP_NAME${Coff}"
+                bes.echo.action "backup last build to ${Coff}dist/$(date +%y%m%d)-$APP_NAME${Coff}"
                 mv $APP_BIN $APP_DIR/dist/$(date +%y%m%d)-$APP_NAME
             else
                 bes.echo.action "removing ${Coff}dist/$APP_NAME${Coff}"
@@ -68,12 +68,12 @@ bes.echo(){
             c=$Caction
         fi
         if [ ! "$isAction" = 0 ]; then
-            c=" $Citem$symbol $c"
+            c="  $Citem$symbol $c"
         fi
         echo -e " $c$msg$Coff"
     else
         if [ ! "$isAction" = 0 ]; then
-            msg=" $symbol $msg"
+            msg="  $symbol $msg"
         fi
         echo -e "$msg"
     fi
@@ -134,31 +134,58 @@ bes.title(){
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 bes.color.map(){
-    for fgbg in 38 48 ; do 
-        for color in {0..256} ; do 
+    for fgbg in 38 48 ; do
+        for color in {0..256} ; do
             echo -en "\e[${fgbg};5;${color}m ${color}\t\e[0m"
             if [ $((($color + 1) % 7)) == 0 ] ; then
-                echo 
+                echo
             fi
         done
         echo
     done
 }
 
-BES_BUILD_VERSION=0.2
+bes.install(){
+    local path=${1:-/usr/local/bin}
+
+    bes.echo.title "Installing bes-build ${Coff}in" "$path"
+
+    if [ -f "./bes-build" ]; then
+        rm ./bes-build
+    fi
+    wget -q https://git.pluie.org/meta-tech/bes-build/raw/master/dist/bes-build
+    if [ $? -eq 0 ]; then
+        chmod +x ./bes-build
+        if [ -d $path ]; then
+            bes.echo.action "install bes-build in ${Copt}$path/bes-build"
+            sudo mv ./bes-build $path/bes-build
+            bes.echo.state $?
+        else
+            bes.echo.error "install directory do not exists : ${Cspe}$path"
+        fi
+    else 
+        bes.echo.error "can not download latest version of bes-build"        
+    fi
+}
+
+BES_BUILD_VERSION=0.3
           APP_DIR=$(pwd)
          APP_NAME=$(basename $(pwd)) 
           APP_BIN=$APP_DIR/dist/$APP_NAME
 
 bes.main(){
-    bes.title 'bes-build' $BES_BUILD_VERSION
-    echo
-    if   [ "$1" = "install" ]; then
-        bes.install
-    elif [ -z "$1" ] || [ "$1" = "-s" ]; then
-        bes.build "$1"
+    if   [ "$1" = "version" ]; then
+        echo $BES_BUILD_VERSION
+    else
+        bes.title 'bes-build' $BES_BUILD_VERSION
+        echo
+        if   [ "$1" = "install" ]; then
+            bes.install $2
+        elif [ -z "$1" ] || [ "$1" = "-s" ]; then
+            bes.build "$1"
+        fi
+        echo
     fi
-    echo
 }
 
 bes.main $*

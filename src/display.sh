@@ -27,12 +27,12 @@ bes.echo(){
             c=$Caction
         fi
         if [ ! "$isAction" = 0 ]; then
-            c=" $Citem$symbol $c"
+            c="  $Citem$symbol $c"
         fi
         echo -e " $c$msg$Coff"
     else
         if [ ! "$isAction" = 0 ]; then
-            msg=" $symbol $msg"
+            msg="  $symbol $msg"
         fi
         echo -e "$msg"
     fi
@@ -93,11 +93,11 @@ bes.title(){
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 bes.color.map(){
-    for fgbg in 38 48 ; do 
-        for color in {0..256} ; do 
+    for fgbg in 38 48 ; do
+        for color in {0..256} ; do
             echo -en "\e[${fgbg};5;${color}m ${color}\t\e[0m"
             if [ $((($color + 1) % 7)) == 0 ] ; then
-                echo 
+                echo
             fi
         done
         echo

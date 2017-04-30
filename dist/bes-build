@@ -108,9 +108,15 @@ if [ -d "$APP_DIR/src" ]; then
     echo "#!/bin/bash" > $APP_BIN
     bes.echo.action "reading ${Coff}src/"
     for entry in "$APP_DIR/src"/*.sh; do
-        bes.echo "      - appending ${Coff}src/$(basename $entry)"
-        tail -n +2 "$entry" >> "$APP_BIN"
+        if [ "$(basename $entry)" != "main.sh" ]; then
+            bes.echo "      - appending ${Coff}src/$(basename $entry)"
+            tail -n +2 "$entry" >> "$APP_BIN"
+        fi
     done
+    if [ -f "$APP_DIR/src/main.sh" ]; then
+        tail -n +2 "$APP_DIR/src/main.sh" >> "$APP_BIN"
+        bes.echo "      - appending ${Coff}src/main.sh"
+    fi
     bes.echo.state 0
     bes.echo.action "set execution mode"
     chmod +x $APP_BIN

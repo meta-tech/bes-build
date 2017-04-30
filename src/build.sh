@@ -9,8 +9,13 @@ bes.build(){
             bes.echo.state $?
         fi
         if [ -f "$APP_BIN" ]; then
-            bes.echo.action "removing ${Coff}dist/$APP_NAME${Coff}"
-            rm $APP_BIN
+            if [ "$1" = "-s" ]; then
+                bes.echo.action "backup last build to ${Coff}dist/$(date +%y%m%d)-$APP_NAME${Coff}"
+                mv $APP_BIN $APP_DIR/dist/$(date +%y%m%d)-$APP_NAME
+            else
+                bes.echo.action "removing ${Coff}dist/$APP_NAME${Coff}"
+                rm $APP_BIN
+            fi
             bes.echo.state $?
         fi
         echo "#!/bin/bash" > $APP_BIN

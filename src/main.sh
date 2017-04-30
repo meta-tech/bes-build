@@ -10,7 +10,7 @@ bes.main(){
     echo
     if   [ "$1" = "install" ]; then
         bes.install
-    elif [ -z "$1" ]; then
+    elif [ -z "$1" ] || [ "$1" = "-s" ]; then
         bes.build "$1"
     fi
     echo

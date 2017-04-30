@@ -68,9 +68,9 @@ bes.echo.state(){
 bes.echo.rs(){
     local rs=${1:-0}
     if [ "$rs" -eq 0 ]; then
-        echo -e "\n  ${Cdone}  done  ${Coff}"
+        echo -e "  ${Cdone}  done  ${Coff}"
     else 
-        echo -e "\n  ${Cfail}  failed  ${Coff}"
+        echo -e "  ${Cfail}  failed  ${Coff}"
     fi
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

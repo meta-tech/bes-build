@@ -5,8 +5,8 @@ BES_TERM_WIDTH=105
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if [ "$BES_NOCOLOR" -eq 0 ]; then
-             Cok="\033[0;38;5;37m";              Cko="\033[0;38;5;217m"
-            Coff="\033[m";                    Ctitle="\033[1;48;5;23;1;38;5;15m"
+             Cok="\033[0;38;5;43m";              Cko="\033[0;38;5;217m"
+            Coff="\033[m";                    Ctitle="\033[1;48;5;24;1;38;5;15m"
            Cdone="\033[1;48;5;36;1;38;5;15m";  Cfail="\033[1;48;5;196;1;38;5;15m"
             Cspe="\033[1;38;5;223m";           Citem="\033[1;38;5;214m"
             Cval="\033[1;38;5;215m";            Cusa="\033[1;38;5;214m"
@@ -14,7 +14,7 @@ if [ "$BES_NOCOLOR" -eq 0 ]; then
            Cmeta="\033[1;38;5;30m";            Ctext="\033[1;38;5;30m"
             Copt="\033[1;38;5;81m";             Csep="\033[1;38;5;241m"
             Cerr="\033[1;38;5;196m";            Ccom="\033[0;38;5;139m"
-        Csection="\033[1;38;5;97m";
+        Csection="\033[1;38;5;97m";          Caction="\033[0;38;5;37m"
 fi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 bes.echo(){
@@ -22,9 +22,9 @@ bes.echo(){
     local isAction=${2:-'0'}
     local   symbol=${3:-' *'}
     if [ ! "$BES_NOCOLOR" = 1 ]; then
-        local   c=$Cko
+        local   c=$Cok
         if [ -z "$isAction" ] || [ "$isAction" = 1 ]; then
-            c=$Cok
+            c=$Caction
         fi
         if [ ! "$isAction" = 0 ]; then
             c=" $Citem$symbol $c"
@@ -43,7 +43,7 @@ bes.echo.action(){
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 bes.echo.title(){
-    bes.echo " ${Cspe}☪ ${Csection}$1 ${Copt}$2${Coff}"
+    bes.echo " ${Citem}☪ ${Csection}$1 ${Cspe}$2${Coff}"
     echo
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -90,4 +90,16 @@ bes.title(){
     printf "%0.s " $(seq 1 $(($BES_TERM_WIDTH-${#len}-15)))
     echo -e " ${Cmeta}license : ${Coff}GNU GPL v3   ${Cmeta}author : ${Cval}$author"
     bes.sepline
+}
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bes.color.map(){
+    for fgbg in 38 48 ; do 
+        for color in {0..256} ; do 
+            echo -en "\e[${fgbg};5;${color}m ${color}\t\e[0m"
+            if [ $((($color + 1) % 7)) == 0 ] ; then
+                echo 
+            fi
+        done
+        echo
+    done
 }

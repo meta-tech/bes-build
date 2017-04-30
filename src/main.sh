@@ -13,6 +13,7 @@ bes.main(){
     elif [ -z "$1" ]; then
         bes.build "$1"
     fi
+    echo
 }
 
 bes.main $*

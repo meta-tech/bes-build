@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-BES_BUILD_VERSION=0.5
+BES_BUILD_VERSION=0.6
           APP_DIR=$(pwd)
          APP_NAME=$(basename $(pwd)) 
           APP_BIN=$APP_DIR/dist/$APP_NAME

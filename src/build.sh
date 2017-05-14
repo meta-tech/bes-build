@@ -29,8 +29,11 @@ bes.build(){
                         for entry in "$project/src"/*.sh; do
                             local vendorName="$(basename $vendor)"
                             local project="$(basename $(dirname $(dirname $entry)))"
-                            bes.echo "      ${Cspe}- ${Cok}appending ${Cusa}$vendorName/$project/${Coff}src/$(basename $entry)"
-                            tail -n +2 "$APP_DIR/vendor/$vendorName/$project/src/$(basename $entry)" >> "$APP_BIN"
+                            local entrypath="$APP_DIR/vendor/$vendorName/$project/src/$(basename $entry)"
+                            if [ -f "$entrypath" ]; then
+                                tail -n +2 "$entrypath" >> "$APP_BIN"
+                                bes.echo "      ${Cspe}- ${Cok}appending ${Cusa}$vendorName/$project/${Coff}src/$(basename $entry)"
+                            fi
                         done
                     fi
                 done

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 bes.install(){
     local path=${1:-/usr/local/bin}
     local done=1

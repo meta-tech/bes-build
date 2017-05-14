@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 bes.build(){
     bes.echo.title "building project" "$APP_NAME"
     if [ -d "$APP_DIR/src" ]; then 
@@ -19,6 +20,24 @@ bes.build(){
             bes.echo.state $?
         fi
         echo "#!/bin/bash" > $APP_BIN
+        bes.echo.action "reading ${Coff}dependencies"
+        for vendor in "$APP_DIR/vendor/*"; do
+            if [ "$(basename $vendor)" != "." ] && [ "$(basename $vendor)" != ".." ]; then
+                local vendorName="$(basename $vendor)"
+                for project in "$vendor/*"; do
+                    if [ "$(basename $project)" != "." ] && [ "$(basename $project)" != ".." ]; then
+                        for entry in "$project/src"/*.sh; do
+                            local vendorName="$(basename $vendor)"
+                            local project="$(basename $(dirname $(dirname $entry)))"
+                            bes.echo "      ${Cspe}- ${Cok}appending ${Cusa}$vendorName/$project/${Coff}src/$(basename $entry)"
+                            tail -n +2 "$APP_DIR/vendor/$vendorName/$project/src/$(basename $entry)" >> "$APP_BIN"
+                        done
+                    fi
+                done
+            fi
+        done
+        bes.echo.state 0
+        
         bes.echo.action "reading ${Coff}src/"
         for entry in "$APP_DIR/src"/*.sh; do
             if [ "$(basename $entry)" != "main.sh" ]; then

@@ -1,10 +1,12 @@
 #!/bin/bash
 
-BES_TERM_WIDTH=105
-   BES_NOCOLOR=0
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if [ "$BES_NOCOLOR" -eq 0 ]; then
+bes.echo.boot ()
+{
+    BES_TERM_WIDTH=${BES_TERM_WIDTH:-105}
+       BES_NOCOLOR=${BES_NOCOLOR:-0}
+
+    if [ "$BES_NOCOLOR" -eq 0 ]; then
              Cok="\033[0;38;5;43m";              Cko="\033[0;38;5;217m"
             Coff="\033[m";                    Ctitle="\033[1;48;5;24;1;38;5;15m"
            Cdone="\033[1;48;5;36;1;38;5;15m";  Cfail="\033[1;48;5;196;1;38;5;15m"
@@ -15,9 +17,11 @@ if [ "$BES_NOCOLOR" -eq 0 ]; then
             Copt="\033[1;38;5;81m";             Csep="\033[1;38;5;241m"
             Cerr="\033[1;38;5;196m";            Ccom="\033[0;38;5;139m"
         Csection="\033[1;38;5;97m";          Caction="\033[0;38;5;37m"
-fi
+    fi
+}
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo(){
+bes.echo ()
+{
     local      msg=${1:-''}
     local isAction=${2:-'0'}
     local   symbol=${3:-' *'}
@@ -38,24 +42,31 @@ bes.echo(){
     fi
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.action(){
+bes.echo.action ()
+{
     bes.echo "$1" 1
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.title(){
+bes.echo.title ()
+{
+    echo
     bes.echo " ${Citem}☪ ${Csection}$1 ${Cspe}$2${Coff}"
     echo
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.keyval(){
+bes.echo.keyval ()
+{
     local c=': '
     if [ ! "$BES_NOCOLOR" = 1 ]; then
         c="$Citem: ${Cval}"
     fi
-    bes.echo "  $1 $c$2" 1 " "
+    local len="%-15s "
+#    printf "%s %s [UP]\n" $PROC_NAME "${line:${#PROC_NAME}}"
+    bes.echo "$(printf $len $1)  $c$2 " 1 " "
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.state(){
+bes.echo.state ()
+{
     local len=8
     printf "%0.s " $(seq 1 $(($BES_TERM_WIDTH-${len})))
     if [ "$1" = 0 ]; then
@@ -65,7 +76,8 @@ bes.echo.state(){
     fi
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.rs(){
+bes.echo.rs ()
+{
     local rs=${1:-0}
     if [ "$rs" -eq 0 ]; then
         echo -e "  ${Cdone}  done  ${Coff}"
@@ -74,11 +86,13 @@ bes.echo.rs(){
     fi
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.error(){
+bes.echo.error ()
+{
     echo -e "\n${Cerr}    error : ${Coff}\n\t$1 ${Coff}\n"
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.sepline(){
+bes.echo.sepline ()
+{
     local  char=${1:-'_'}
     local width=${2:-$BES_TERM_WIDTH}
     echo -ne "${Csep} "
@@ -86,7 +100,8 @@ bes.sepline(){
     echo -e "${Coff}"
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.title(){
+bes.echo.app ()
+{
     local     msg=${1:-''}
     local version=${2:-''}
     local  author=${3:-'a-Sansara'}
@@ -94,14 +109,15 @@ bes.title(){
         msg="$msg ${Cval}v$version"
     fi
     local     len="$1${version}license : GNU GPL v3   author:$author"
-    bes.sepline
+    bes.echo.sepline
     echo -ne "\n  $Ctitle   $msg   $Coff"
     printf "%0.s " $(seq 1 $(($BES_TERM_WIDTH-${#len}-15)))
     echo -e " ${Cmeta}license : ${Coff}GNU GPL v3   ${Cmeta}author : ${Cval}$author"
-    bes.sepline
+    bes.echo.sepline
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.color.map(){
+bes.echo.colormap ()
+{
     for fgbg in 38 48 ; do
         for color in {0..256} ; do
             echo -en "\e[${fgbg};5;${color}m ${color}\t\e[0m"
@@ -112,3 +128,5 @@ bes.color.map(){
         echo
     done
 }
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bes.echo.boot

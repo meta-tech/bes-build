@@ -1,12 +1,12 @@
 bes-build
 =========
 
-bes-build is a bash script to build bash program.  
+**bes-build** is a bash script to build bash program.  
 the building process simply consist to append shell script files from your `src/` project directory 
 into a single `dist/project` executable file
 
 
-since version 0.5 bes-build attempt to be a dependency manager like `composer` (for php projects) but in a more extra-light way
+since version **0.5** **bes-build** attempt to be a *dependency manager* like `composer` (for php projects) but in a more extra-light way
 
 
 ### Install
@@ -30,7 +30,7 @@ bes-build -h
 
 ### Requirements
 
-using bes-build script require you to conform to these following rules :
+using **bes-build** script require you to conform to these following rules :
 
 * respect this directory structure :
 ```pre
@@ -55,7 +55,7 @@ bes.install(){
 ### Depency Manager Requirements
 
 **note** This functionnality is still in progress  
-to use `bes-build` like a dependency manager, you need a `bes.ini` file in your application root path
+to use **bes-build** like a dependency manager, you need a `bes.ini` file in your application root path
 
 ```ini  
 [require]
@@ -68,8 +68,8 @@ then you can run the `update` command before building
 bes-build update
 ```
 
-`bes-build` call `git` on a `vendor` directory and clone the require lib
+**bes-build** call `git` on a `vendor` directory and clone the require lib
 
-on next build, bes-build  will append the dependencies
+on next build, **bes-build**  will append the dependencies to your dist file
 
 

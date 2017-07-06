@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.build(){
+function bes.build ()
+{
     bes.echo.title "building project" "$APP_NAME"
     if [ -d "$APP_DIR/src" ]; then 
         if [ ! -d "$APP_DIR/dist" ]; then
@@ -21,24 +22,25 @@ bes.build(){
         fi
         echo "#!/bin/bash" > $APP_BIN
         bes.echo.action "reading ${Coff}dependencies"
-        for vendor in "$APP_DIR/vendor/*"; do
-            if [ "$(basename $vendor)" != "." ] && [ "$(basename $vendor)" != ".." ]; then
-                local vendorName="$(basename $vendor)"
-                for project in "$vendor/*"; do
-                    if [ "$(basename $project)" != "." ] && [ "$(basename $project)" != ".." ]; then
-                        for entry in "$project/src"/*.sh; do
-                            local vendorName="$(basename $vendor)"
-                            local project="$(basename $(dirname $(dirname $entry)))"
-                            local entrypath="$APP_DIR/vendor/$vendorName/$project/src/$(basename $entry)"
-                            if [ -f "$entrypath" ]; then
-                                tail -n +2 "$entrypath" >> "$APP_BIN"
-                                bes.echo "      ${Cspe}- ${Cok}appending ${Cusa}$vendorName/$project/${Coff}src/$(basename $entry)"
-                            fi
-                        done
-                    fi
-                done
-            fi
-        done
+        if [ -d "$APP_DIR/vendor" ]; then
+            for vendor in $(ls $APP_DIR/vendor/); do
+                if [ "$vendor" != "." ] && [ "$vendor" != ".." ]; then
+                    for project in $(ls $APP_DIR/vendor/$vendor/); do
+                        if [ "$project" != "." ] && [ "$project" != ".." ]; then
+                            for entry in $(ls $APP_DIR/vendor/$vendor/$project/src/); do
+                                local entrypath="$APP_DIR/vendor/$vendor/$project/src/$(basename $entry)"
+                                if [ -f "$entrypath" ] && [ "${entrypath: -3}" = ".sh" ]; then
+                                    tail -n +2 "$entrypath" >> "$APP_BIN"
+                                    bes.echo "      ${Cspe}- ${Cok}appending ${Cusa}$vendorName/$project/${Coff}src/$(basename $entry)"
+                                fi
+                            done
+                        fi
+                    done
+                fi
+            done
+        else
+            bes.echo "     no dependencies, did you forget to run bes-build update ?"
+        fi
         bes.echo.state 0
         
         bes.echo.action "reading ${Coff}src/"
@@ -63,9 +65,15 @@ bes.build(){
         bes.echo.state 1
     fi
 }
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.boot ()
+#
+# @author   a-Sansara - https://git.pluie.org/meta-tech/bes-echo
+# @app      bes-echo
+# @license  GNU GPL v3
+# @date     2017-05-13 23:50:54 CET
+#
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function bes.echo.boot ()
 {
     BES_TERM_WIDTH=${BES_TERM_WIDTH:-105}
        BES_NOCOLOR=${BES_NOCOLOR:-0}
@@ -84,7 +92,7 @@ bes.echo.boot ()
     fi
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo ()
+function bes.echo ()
 {
     local      msg=${1:-''}
     local isAction=${2:-'0'}
@@ -106,19 +114,19 @@ bes.echo ()
     fi
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.action ()
+function bes.echo.action ()
 {
     bes.echo "$1" 1
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.title ()
+function bes.echo.title ()
 {
     echo
     bes.echo " ${Citem}☪ ${Csection}$1 ${Cspe}$2${Coff}"
     echo
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.keyval ()
+function bes.echo.keyval ()
 {
     local c=': '
     if [ ! "$BES_NOCOLOR" = 1 ]; then
@@ -129,7 +137,7 @@ bes.echo.keyval ()
     bes.echo "$(printf $len $1)  $c$2 " 1 " "
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.state ()
+function bes.echo.state ()
 {
     local len=8
     printf "%0.s " $(seq 1 $(($BES_TERM_WIDTH-${len})))
@@ -140,7 +148,7 @@ bes.echo.state ()
     fi
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.rs ()
+function bes.echo.rs ()
 {
     local rs=${1:-0}
     if [ "$rs" -eq 0 ]; then
@@ -150,12 +158,12 @@ bes.echo.rs ()
     fi
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.error ()
+function bes.echo.error ()
 {
     echo -e "\n${Cerr}    error : ${Coff}\n\t$1 ${Coff}\n"
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.sepline ()
+function bes.echo.sepline ()
 {
     local  char=${1:-'_'}
     local width=${2:-$BES_TERM_WIDTH}
@@ -164,7 +172,7 @@ bes.echo.sepline ()
     echo -e "${Coff}"
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.app ()
+function bes.echo.app ()
 {
     local     msg=${1:-''}
     local version=${2:-''}
@@ -180,7 +188,7 @@ bes.echo.app ()
     bes.echo.sepline
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.colormap ()
+function bes.echo.colormap ()
 {
     for fgbg in 38 48 ; do
         for color in {0..256} ; do
@@ -194,8 +202,16 @@ bes.echo.colormap ()
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 bes.echo.boot
-
-# bes alter '__' to '_' 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# @author   a-Sansara - https://git.pluie.org/meta-tech/bes-echo
+# @app      bes-ini
+# @license  GNU GPL v3
+# @date     2017-05-19 22:52:59 CET
+#
+# bes alter '__' to '_' , rename bes.ini to bes.ini
+#
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 # > https://github.com/rudimeier/bash_ini_parser
 # 
@@ -210,14 +226,14 @@ bes.echo.boot
 #
 # See README for usage.
 #
-#
-function read_ini()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function bes.ini ()
 {
     # Be strict with the prefix, since it's going to be run through eval
     function check_prefix()
     {
         if ! [[ "${VARNAME_PREFIX}" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]] ;then
-            echo "read_ini: invalid prefix '${VARNAME_PREFIX}'" >&2
+            echo "bes.ini: invalid prefix '${VARNAME_PREFIX}'" >&2
             return 1
         fi
     }
@@ -225,7 +241,7 @@ function read_ini()
     function check_ini_file()
     {
         if [ ! -r "$INI_FILE" ] ;then
-            echo "read_ini: '${INI_FILE}' doesn't exist or not" \
+            echo "bes.ini: '${INI_FILE}' doesn't exist or not" \
                 "readable" >&2
             return 1
         fi
@@ -244,7 +260,7 @@ function read_ini()
     }
     
     # unset all local functions and restore shopt settings before returning
-    # from read_ini()
+    # from bes.ini()
     function cleanup_bash()
     {
         shopt -q -u ${SWITCH_SHOPT}
@@ -311,8 +327,8 @@ function read_ini()
     done
 
     if [ -z "$INI_FILE" ] && [ "${CLEAN_ENV}" = 0 ] ;then
-        echo -e "Usage: read_ini [-c] [-b 0| -b 1]] [-p PREFIX] FILE"\
-            "[SECTION]\n  or   read_ini -c [-p PREFIX]" >&2
+        echo -e "Usage: bes.ini [-c] [-b 0| -b 1]] [-p PREFIX] FILE"\
+            "[SECTION]\n  or   bes.ini -c [-p PREFIX]" >&2
         cleanup_bash
         return 1
     fi
@@ -477,42 +493,40 @@ function read_ini()
     cleanup_bash
 }
 
-
 # < https://github.com/rudimeier/bash_ini_parser
 
-bes.ini(){
-    read_ini $*
-}
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.install(){
-    local path=${1:-/usr/local/bin}
+function bes.install ()
+{
+    local  app=${1}
+    local  url=${2}
+    local path=${3:-/usr/local/bin}
     local done=1
-    bes.echo.title "Installing bes-build ${Coff}in" "$path"
+    bes.echo.title "Installing $app ${Coff}in" "$path"
 
-    if [ -f "./bes-build" ]; then
-        rm ./bes-build
+    if [ -f "./$app" ]; then
+        rm ./$app
     fi
-    wget -q https://git.pluie.org/meta-tech/bes-build/raw/latest/dist/bes-build
+    wget -q $url
     if [ $? -eq 0 ]; then
-        chmod +x ./bes-build
+        chmod +x ./$app
         if [ -d $path ]; then
-            sudo mv ./bes-build $path/bes-build
+            sudo mv ./$app $path/$app
             local done=$?
             bes.echo.state $done
         else
             bes.echo.error "install directory do not exists : ${Cspe}$path"
         fi
     else 
-        bes.echo.error "can not download latest version of bes-build"        
+        bes.echo.error "can not download latest version of app $app. please check url : $url"        
     fi
     bes.echo.rs $done
 }
 
-BES_LIB="echo"
+BES_LIB="echo install ini"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.inlist ()
+function bes.inlist ()
 {
     local rs=1
     if [[ "$2" =~ (^|[[:space:]])"$1"($|[[:space:]]) ]] ; then
@@ -521,119 +535,156 @@ bes.inlist ()
     return $rs
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.update ()
+function bes.update ()
 {
-    bes.ini $APP_DIR/bes.ini -p bes -b 1
-
     bes.echo.title "Reading Project" $APP_NAME
     bes.echo.keyval path $APP_DIR
-    local keys="vendor name version license author"
-    local value=""
-    for key in $keys; do
-        value="bes_project_$key"
-        if [ ! -z "${!value}" ]; then
-            bes.echo.keyval $key "${!value}"
-        fi
-    done
 
-    bes.ini "$APP_DIR/bes.ini" require -p bes -b 1
-    local prefix="bes_require"
-    local key=""
-    if [ ! -z "${bes_ALL_VARS}" ]; then
-        bes.echo.title "Checking Dependencies"
-        for name in ${bes_ALL_VARS}; do
-            key=${name:${#prefix}+1}
-            bes.echo.keyval ${key//_/.} ${!name}
+    if [ -f $APP_DIR/bes.ini ]; then
+        bes.ini $APP_DIR/bes.ini -p bes -b 1
+
+        local keys="vendor name version license author"
+        local value=""
+        for key in $keys; do
+            value="bes_project_$key"
+            if [ ! -z "${!value}" ]; then
+                bes.echo.keyval $key "${!value}"
+            fi
+        done
+
+        bes.ini "$APP_DIR/bes.ini" require -p bes -b 1
+        local prefix="bes_require"
+        local key=""
+        local bescheck=1;
+        if [ ! -z "${bes_ALL_VARS}" ]; then
+            bes.echo.title "Checking Dependencies"
+            for name in ${bes_ALL_VARS}; do
+                key=${name:${#prefix}+1}
+                bes.echo.keyval ${key//_/.} ${!name}
+            done
             echo
-            local project=${key#*_}
-            local vendor=${key%_*}
-            local version=${!name}
-            
-            if [ "$vendor" = "bes" ]; then
-                if bes.inlist "$project" "$BES_LIB"; then
+            for name in ${bes_ALL_VARS}; do
+                key=${name:${#prefix}+1}
+                bes.echo.title "Loading" "${key//_/.}${Cusa} ${!name}${Coff}"
+                local project=${key#*_}
+                local vendor=${key%_*}
+                local version=${!name}
+                bes.inlist "$project" "$BES_LIB"
+                if [ "$vendor" = "bes" ]; then
+                    if bes.inlist "$project" "$BES_LIB"; then
+                        if [ "$bescheck" = "1" ]; then
+                            if [ ! -d "$APP_DIR/vendor/$vendor" ]; then
+                                bes.echo.action "creating vendor directory ${Cusa}$vendor"
+                                mkdir -p "$APP_DIR/vendor/$vendor"
+                            else
+                                bes.echo.action "checking vendor directory ${Cusa}$vendor"
+                            fi
+                            bes.echo.state $?
+                            bescheck=0
+                        fi
+                        cd "$APP_DIR/vendor/$vendor"
+                        bes.echo.action "updating repository $Cusa$vendor.$project ${Coff}:$Cusa $version"
+                        if [ ! -d "$project" ]; then
+                            git clone -q "https://git.pluie.org/meta-tech/$vendor-$project" "$project" 2>&1 >/dev/null
+                            #~ bes.echo.state $?
+                            cd $project
+                        else
+                            cd $project
+                            git fetch --all -q 2>&1 >/dev/null
+                            #~ bes.echo.state $?
+                        fi
+                        #~ bes.echo.action "checkout to version $Cusa$version"
+                        local branch=$(git branch --no-color | grep \* | cut -d ' ' -f2-)
+                        # branch=${branch:5: -3}
+                        if [ "$branch" != "$version" ]; then
+                            git checkout -q $version 2>&1 >/dev/null
+                        fi
+                        bes.echo.state $?
+                        for entry in "$APP_DIR/vendor/$vendor/$project/src"/*.sh; do
+                            bes.echo "      ${Cspe}- ${Cok}set for autoloading ${Coff}src/$(basename $entry)"
+                            # tail -n +2 "$entry" >> "$APP_BIN"
+                        done
+                        bes.echo.state $?
+                    fi
+                else
                     if [ ! -d "$APP_DIR/vendor/$vendor" ]; then
                         bes.echo.action "creating vendor directory ${Cusa}$vendor"
                         mkdir -p "$APP_DIR/vendor/$vendor"
-                    else
-                        bes.echo.action "checking vendor directory ${Cusa}$vendor"
+                        bes.echo.state $?
                     fi
-                    bes.echo.state $?
-                    cd "$APP_DIR/vendor/$vendor"
-                    bes.echo.action "updating repository $Cusa$vendor.$project ${Coff}:$Cusa $version"
-                    if [ ! -d "$project" ]; then
-                        git clone -q "https://git.pluie.org/meta-tech/$vendor-$project" "$project" 2>&1 >/dev/null
-                        #~ bes.echo.state $?
-                        cd $project
-                    else
-                        cd $project
-                        git fetch --all -q 2>&1 >/dev/null
-                        #~ bes.echo.state $?
+                    if [ "${version:0:4}" = "http" ]; then
+                        local req=${!name}
+                        local path=${req#*:} 
+                        local  tag=${req##*:} 
+                        local repo=${req%:*}
+                        echo "$APP_DIR/vendor/$vendor/$project"
+                        echo $(pwd)
+                        if [ ! -d "$APP_DIR/vendor/$vendor/$project" ]; then
+                            mkdir "$APP_DIR/vendor/$vendor"
+                            cd $_
+                            git clone $repo $project
+                        fi
+                        cd "$APP_DIR/vendor/$vendor/$project"
+                        git checkout $tag
+                        for entry in "$APP_DIR/vendor/$vendor/$project/src"/*.sh; do
+                            bes.echo "      ${Cspe}- ${Cok}set for autoloading ${Coff}src/$(basename $entry)"
+                            # tail -n +2 "$entry" >> "$APP_BIN"
+                        done
+                        bes.echo.state $?
                     fi
-                    #~ bes.echo.action "checkout to version $Cusa$version"
-                    local branch=$(git branch --no-color | grep \* | cut -d ' ' -f2-)
-                    # branch=${branch:5: -3}
-                    if [ "$branch" != "$version" ]; then
-                        git checkout -q -b $version 2>&1 >/dev/null
-                    fi
-                    bes.echo.state $?
-                    for entry in "$APP_DIR/vendor/$vendor/$project/src"/*.sh; do
-                        bes.echo "      ${Cspe}- ${Cok}set for autoloading ${Coff}src/$(basename $entry)"
-                        # tail -n +2 "$entry" >> "$APP_BIN"
-                    done
-                    bes.echo.state $?
                 fi
-            fi
-            bes.echo.rs
-            
-            local req=${!name}
-            local path=${req#*:} 
-            local repo=${req%:*}
-            local repoName=bes_repo_$repo
-            local repoVar=${!repoName}
-            local src=${!repoName}$path
-            #~ echo "$name : ${!name}"
-            #~ echo "\$req : ${req}"
-            #~ echo "\$repo : ${repo}"
-            #~ echo "\$path : ${path}"
-            #~ echo "\$repoName : ${repoName}"
-            #~ echo "\$repoVar : ${repoVar}"
-            #~ echo "\$src : ${src}"
-        done
+                bes.echo.rs
+            done
+        fi
+    else
+        echo
+        bes.echo '    no bes.ini file for your project'
+        bes.echo.state
     fi
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.usage(){
+function bes.usage ()
+{
     echo -e "     ${Cusa}Usage :${Coff}\n
     ${Ccom}\tBuild current project (overwrite existing build)
-    ${Cspe}\tbes-build  ${Copt}
+    ${Cspe}\t$APP_NAME  ${Copt}
     ${Ccom}\tBuild current project and backup existing build
-    ${Cspe}\tbes-build  ${Copt}-b${Ctext}, ${Copt}backup
-    ${Ccom}\tInstall or update bes-build on specified BINDIR directory or in /etc/local/bin directory
-    ${Cspe}\tbes-build  ${Copt}-i${Ctext}, ${Copt}install        ${Copt}[ ${Ctext}BINDIR${Copt} ]
+    ${Cspe}\t$APP_NAME  ${Copt}-b${Ctext}, ${Copt}backup
+    ${Ccom}\tInstall or update $APP_NAME on specified BINDIR directory or in /etc/local/bin directory
+    ${Cspe}\t$APP_NAME  ${Copt}-i${Ctext}, ${Copt}install        ${Copt}[ ${Ctext}BINDIR${Copt} ]
     ${Ccom}\tDisplay program version
-    ${Cspe}\tbes-build  ${Copt}-v${Ctext}, ${Copt}version
+    ${Cspe}\t$APP_NAME  ${Copt}-v${Ctext}, ${Copt}version
     ${Ccom}\tDisplay this help
-    ${Cspe}\tbes-build  ${Copt}-h${Ctext}, ${Copt}help"
+    ${Cspe}\t$APP_NAME  ${Copt}-h${Ctext}, ${Copt}help"
 
     echo -e "${Coff}"
 }
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-BES_BUILD_VERSION=0.6
+#
+# @author   a-Sansara - https://git.pluie.org/meta-tech/bes-build
+# @app      bes-build
+# @license  GNU GPL v3
+# @date     2017-06-16 04:38:52 CET
+#
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      BES_VERSION=0.6
+         BES_NAME="bes-build"
+          BES_URL="https://git.pluie.org/meta-tech/$BES_NAME/raw/latest/dist/$BES_NAME"
           APP_DIR=$(pwd)
          APP_NAME=$(basename $(pwd)) 
           APP_BIN=$APP_DIR/dist/$APP_NAME
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.main(){
+function bes.main ()
+{
     if   [ "$1" = "version" ] || [ "$1" = "-v" ]; then
-        echo $BES_BUILD_VERSION
+        echo $BES_VERSION
     else
-        bes.echo.app 'bes-build' $BES_BUILD_VERSION
+        bes.echo.app "$BES_NAME" "$BES_VERSION"
         echo
         if   [ "$1" = "install" ] || [ "$1" = "-i" ]; then
-            bes.install "$2"
+            bes.install "$BES_NAME" "$BES_URL" "$2"
         elif [ "$1" = "help" ] || [ "$1" = "-h" ]; then
             bes.usage
         elif [ "$1" = "update" ] || [ "$1" = "-u" ]; then

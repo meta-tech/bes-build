@@ -66,7 +66,7 @@ to use **bes-build** like a dependency manager, you need a `bes.ini` file in you
 
 ```ini  
 [require]
-bes.echo    = 1.0
+bes.echo    = 1.1
 ```
  
 then you can run the `update` command before building
@@ -80,3 +80,30 @@ bes-build update
 on next build, **bes-build**  will append the dependencies to your dist file
 
 
+### External dependencies
+
+since version 0.6 you can now add external dependencies :
+
+```ini  
+[require]
+test.echo   = https://git.pluie.org/meta-tech/bes-echo:master
+```
+
+
+### Releasing bes lib
+
+if you intend to release your lib as a bes dependency you must provide a bes.ini file as following :
+(example is taken from bes-echo)
+
+```
+[project]
+vendor      = bes
+name        = echo
+version     = 1.1
+license     = "GNU GPL v3"
+author      = a-Sansara
+type        = library
+homepage    = "https://git.pluie.org/meta-tech/bes-echo"
+description = "bash bes display utility library"
+keywords    = "bash, bes"
+```

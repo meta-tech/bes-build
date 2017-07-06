@@ -1,7 +1,13 @@
 #!/bin/bash
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.boot ()
+#
+# @author   a-Sansara - https://git.pluie.org/meta-tech/bes-echo
+# @app      bes-echo
+# @license  GNU GPL v3
+# @date     2017-05-13 23:50:54 CET
+#
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function bes.echo.boot ()
 {
     BES_TERM_WIDTH=${BES_TERM_WIDTH:-105}
        BES_NOCOLOR=${BES_NOCOLOR:-0}
@@ -20,7 +26,7 @@ bes.echo.boot ()
     fi
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo ()
+function bes.echo ()
 {
     local      msg=${1:-''}
     local isAction=${2:-'0'}
@@ -42,19 +48,19 @@ bes.echo ()
     fi
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.action ()
+function bes.echo.action ()
 {
     bes.echo "$1" 1
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.title ()
+function bes.echo.title ()
 {
     echo
     bes.echo " ${Citem}☪ ${Csection}$1 ${Cspe}$2${Coff}"
     echo
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.keyval ()
+function bes.echo.keyval ()
 {
     local c=': '
     if [ ! "$BES_NOCOLOR" = 1 ]; then
@@ -65,7 +71,7 @@ bes.echo.keyval ()
     bes.echo "$(printf $len $1)  $c$2 " 1 " "
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.state ()
+function bes.echo.state ()
 {
     local len=8
     printf "%0.s " $(seq 1 $(($BES_TERM_WIDTH-${len})))
@@ -76,7 +82,7 @@ bes.echo.state ()
     fi
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.rs ()
+function bes.echo.rs ()
 {
     local rs=${1:-0}
     if [ "$rs" -eq 0 ]; then
@@ -86,12 +92,12 @@ bes.echo.rs ()
     fi
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.error ()
+function bes.echo.error ()
 {
     echo -e "\n${Cerr}    error : ${Coff}\n\t$1 ${Coff}\n"
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.sepline ()
+function bes.echo.sepline ()
 {
     local  char=${1:-'_'}
     local width=${2:-$BES_TERM_WIDTH}
@@ -100,7 +106,7 @@ bes.echo.sepline ()
     echo -e "${Coff}"
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.app ()
+function bes.echo.app ()
 {
     local     msg=${1:-''}
     local version=${2:-''}
@@ -116,7 +122,7 @@ bes.echo.app ()
     bes.echo.sepline
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.echo.colormap ()
+function bes.echo.colormap ()
 {
     for fgbg in 38 48 ; do
         for color in {0..256} ; do

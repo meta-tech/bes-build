@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.build(){
+function bes.build ()
+{
     bes.echo.title "building project" "$APP_NAME"
     if [ -d "$APP_DIR/src" ]; then 
         if [ ! -d "$APP_DIR/dist" ]; then
@@ -21,24 +22,25 @@ bes.build(){
         fi
         echo "#!/bin/bash" > $APP_BIN
         bes.echo.action "reading ${Coff}dependencies"
-        for vendor in "$APP_DIR/vendor/*"; do
-            if [ "$(basename $vendor)" != "." ] && [ "$(basename $vendor)" != ".." ]; then
-                local vendorName="$(basename $vendor)"
-                for project in "$vendor/*"; do
-                    if [ "$(basename $project)" != "." ] && [ "$(basename $project)" != ".." ]; then
-                        for entry in "$project/src"/*.sh; do
-                            local vendorName="$(basename $vendor)"
-                            local project="$(basename $(dirname $(dirname $entry)))"
-                            local entrypath="$APP_DIR/vendor/$vendorName/$project/src/$(basename $entry)"
-                            if [ -f "$entrypath" ]; then
-                                tail -n +2 "$entrypath" >> "$APP_BIN"
-                                bes.echo "      ${Cspe}- ${Cok}appending ${Cusa}$vendorName/$project/${Coff}src/$(basename $entry)"
-                            fi
-                        done
-                    fi
-                done
-            fi
-        done
+        if [ -d "$APP_DIR/vendor" ]; then
+            for vendor in $(ls $APP_DIR/vendor/); do
+                if [ "$vendor" != "." ] && [ "$vendor" != ".." ]; then
+                    for project in $(ls $APP_DIR/vendor/$vendor/); do
+                        if [ "$project" != "." ] && [ "$project" != ".." ]; then
+                            for entry in $(ls $APP_DIR/vendor/$vendor/$project/src/); do
+                                local entrypath="$APP_DIR/vendor/$vendor/$project/src/$(basename $entry)"
+                                if [ -f "$entrypath" ] && [ "${entrypath: -3}" = ".sh" ]; then
+                                    tail -n +2 "$entrypath" >> "$APP_BIN"
+                                    bes.echo "      ${Cspe}- ${Cok}appending ${Cusa}$vendorName/$project/${Coff}src/$(basename $entry)"
+                                fi
+                            done
+                        fi
+                    done
+                fi
+            done
+        else
+            bes.echo "     no dependencies, did you forget to run bes-build update ?"
+        fi
         bes.echo.state 0
         
         bes.echo.action "reading ${Coff}src/"

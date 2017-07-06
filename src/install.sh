@@ -1,26 +1,29 @@
 #!/bin/bash
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bes.install(){
-    local path=${1:-/usr/local/bin}
+function bes.install ()
+{
+    local  app=${1}
+    local  url=${2}
+    local path=${3:-/usr/local/bin}
     local done=1
-    bes.echo.title "Installing bes-build ${Coff}in" "$path"
+    bes.echo.title "Installing $app ${Coff}in" "$path"
 
-    if [ -f "./bes-build" ]; then
-        rm ./bes-build
+    if [ -f "./$app" ]; then
+        rm ./$app
     fi
-    wget -q https://git.pluie.org/meta-tech/bes-build/raw/latest/dist/bes-build
+    wget -q $url
     if [ $? -eq 0 ]; then
-        chmod +x ./bes-build
+        chmod +x ./$app
         if [ -d $path ]; then
-            sudo mv ./bes-build $path/bes-build
+            sudo mv ./$app $path/$app
             local done=$?
             bes.echo.state $done
         else
             bes.echo.error "install directory do not exists : ${Cspe}$path"
         fi
     else 
-        bes.echo.error "can not download latest version of bes-build"        
+        bes.echo.error "can not download latest version of app $app. please check url : $url"        
     fi
     bes.echo.rs $done
 }

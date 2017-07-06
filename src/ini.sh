@@ -1,6 +1,14 @@
 #!/bin/bash
-
-# bes alter '__' to '_' 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# @author   a-Sansara - https://git.pluie.org/meta-tech/bes-echo
+# @app      bes-ini
+# @license  GNU GPL v3
+# @date     2017-05-19 22:52:59 CET
+#
+# bes alter '__' to '_' , rename bes.ini to bes.ini
+#
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 # > https://github.com/rudimeier/bash_ini_parser
 # 
@@ -15,14 +23,14 @@
 #
 # See README for usage.
 #
-#
-function read_ini()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function bes.ini ()
 {
     # Be strict with the prefix, since it's going to be run through eval
     function check_prefix()
     {
         if ! [[ "${VARNAME_PREFIX}" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]] ;then
-            echo "read_ini: invalid prefix '${VARNAME_PREFIX}'" >&2
+            echo "bes.ini: invalid prefix '${VARNAME_PREFIX}'" >&2
             return 1
         fi
     }
@@ -30,7 +38,7 @@ function read_ini()
     function check_ini_file()
     {
         if [ ! -r "$INI_FILE" ] ;then
-            echo "read_ini: '${INI_FILE}' doesn't exist or not" \
+            echo "bes.ini: '${INI_FILE}' doesn't exist or not" \
                 "readable" >&2
             return 1
         fi
@@ -49,7 +57,7 @@ function read_ini()
     }
     
     # unset all local functions and restore shopt settings before returning
-    # from read_ini()
+    # from bes.ini()
     function cleanup_bash()
     {
         shopt -q -u ${SWITCH_SHOPT}
@@ -116,8 +124,8 @@ function read_ini()
     done
 
     if [ -z "$INI_FILE" ] && [ "${CLEAN_ENV}" = 0 ] ;then
-        echo -e "Usage: read_ini [-c] [-b 0| -b 1]] [-p PREFIX] FILE"\
-            "[SECTION]\n  or   read_ini -c [-p PREFIX]" >&2
+        echo -e "Usage: bes.ini [-c] [-b 0| -b 1]] [-p PREFIX] FILE"\
+            "[SECTION]\n  or   bes.ini -c [-p PREFIX]" >&2
         cleanup_bash
         return 1
     fi
@@ -282,9 +290,4 @@ function read_ini()
     cleanup_bash
 }
 
-
 # < https://github.com/rudimeier/bash_ini_parser
-
-bes.ini(){
-    read_ini $*
-}

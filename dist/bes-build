@@ -1,70 +1,4 @@
 #!/bin/bash
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function bes.build ()
-{
-    bes.echo.title "building project" "$APP_NAME"
-    if [ -d "$APP_DIR/src" ]; then 
-        if [ ! -d "$APP_DIR/dist" ]; then
-            bes.echo.action "creating dist directory"
-            mkdir $APP_DIR/dist
-            bes.echo.state $?
-        fi
-        if [ -f "$APP_BIN" ]; then
-            if [ "$1" = "backup" ] || [ "$1" = "-b" ]; then
-                bes.echo.action "backup last build to ${Coff}dist/$(date +%y%m%d)-$APP_NAME${Coff}"
-                mv $APP_BIN $APP_DIR/dist/$(date +%y%m%d)-$APP_NAME
-            else
-                bes.echo.action "removing ${Coff}dist/$APP_NAME${Coff}"
-                rm $APP_BIN
-            fi
-            bes.echo.state $?
-        fi
-        echo "#!/bin/bash" > $APP_BIN
-        bes.echo.action "reading ${Coff}dependencies"
-        if [ -d "$APP_DIR/vendor" ]; then
-            for vendor in $(ls $APP_DIR/vendor/); do
-                if [ "$vendor" != "." ] && [ "$vendor" != ".." ]; then
-                    for project in $(ls $APP_DIR/vendor/$vendor/); do
-                        if [ "$project" != "." ] && [ "$project" != ".." ]; then
-                            for entry in $(ls $APP_DIR/vendor/$vendor/$project/src/); do
-                                local entrypath="$APP_DIR/vendor/$vendor/$project/src/$(basename $entry)"
-                                if [ -f "$entrypath" ] && [ "${entrypath: -3}" = ".sh" ]; then
-                                    tail -n +2 "$entrypath" >> "$APP_BIN"
-                                    bes.echo "      ${Cspe}- ${Cok}appending ${Cusa}$vendorName/$project/${Coff}src/$(basename $entry)"
-                                fi
-                            done
-                        fi
-                    done
-                fi
-            done
-        else
-            bes.echo "     no dependencies, did you forget to run bes-build update ?"
-        fi
-        bes.echo.state 0
-        
-        bes.echo.action "reading ${Coff}src/"
-        for entry in "$APP_DIR/src"/*.sh; do
-            if [ "$(basename $entry)" != "main.sh" ]; then
-                bes.echo "      ${Cspe}- ${Cok}appending ${Coff}src/$(basename $entry)"
-                tail -n +2 "$entry" >> "$APP_BIN"
-            fi
-        done
-        if [ -f "$APP_DIR/src/main.sh" ]; then
-            tail -n +2 "$APP_DIR/src/main.sh" >> "$APP_BIN"
-            bes.echo "      ${Cspe}- ${Cok}appending ${Coff}src/main.sh"
-        fi
-        bes.echo.state 0
-        bes.echo.action "set execution mode"
-        chmod +x $APP_BIN
-        done=$?
-        bes.echo.state $done
-        bes.echo.rs $done
-    else
-        bes.echo.error "no src/ directory. exit"
-        bes.echo.state 1
-    fi
-}
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 # @author   a-Sansara - https://git.pluie.org/meta-tech/bes-echo
@@ -209,7 +143,7 @@ bes.echo.boot
 # @license  GNU GPL v3
 # @date     2017-05-19 22:52:59 CET
 #
-# bes alter '__' to '_' , rename bes.ini to bes.ini
+# bes alter '__' to '_' , rename read_ini to bes.ini
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
@@ -233,7 +167,7 @@ function bes.ini ()
     function check_prefix()
     {
         if ! [[ "${VARNAME_PREFIX}" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]] ;then
-            echo "bes.ini: invalid prefix '${VARNAME_PREFIX}'" >&2
+            echo "read_ini: invalid prefix '${VARNAME_PREFIX}'" >&2
             return 1
         fi
     }
@@ -241,7 +175,7 @@ function bes.ini ()
     function check_ini_file()
     {
         if [ ! -r "$INI_FILE" ] ;then
-            echo "bes.ini: '${INI_FILE}' doesn't exist or not" \
+            echo "read_ini: '${INI_FILE}' doesn't exist or not" \
                 "readable" >&2
             return 1
         fi
@@ -260,7 +194,7 @@ function bes.ini ()
     }
     
     # unset all local functions and restore shopt settings before returning
-    # from bes.ini()
+    # from read_ini()
     function cleanup_bash()
     {
         shopt -q -u ${SWITCH_SHOPT}
@@ -327,8 +261,8 @@ function bes.ini ()
     done
 
     if [ -z "$INI_FILE" ] && [ "${CLEAN_ENV}" = 0 ] ;then
-        echo -e "Usage: bes.ini [-c] [-b 0| -b 1]] [-p PREFIX] FILE"\
-            "[SECTION]\n  or   bes.ini -c [-p PREFIX]" >&2
+        echo -e "Usage: read_ini [-c] [-b 0| -b 1]] [-p PREFIX] FILE"\
+            "[SECTION]\n  or   read_ini -c [-p PREFIX]" >&2
         cleanup_bash
         return 1
     fi
@@ -494,7 +428,13 @@ function bes.ini ()
 }
 
 # < https://github.com/rudimeier/bash_ini_parser
-
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# @author   a-Sansara - https://git.pluie.org/meta-tech/bes-install
+# @app      bes-install
+# @license  GNU GPL v3
+# @date     2017-07-07 02:21:51 CET
+#
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function bes.install ()
 {
@@ -521,6 +461,72 @@ function bes.install ()
         bes.echo.error "can not download latest version of app $app. please check url : $url"        
     fi
     bes.echo.rs $done
+}
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function bes.build ()
+{
+    bes.echo.title "building project" "$APP_NAME"
+    if [ -d "$APP_DIR/src" ]; then 
+        if [ ! -d "$APP_DIR/dist" ]; then
+            bes.echo.action "creating dist directory"
+            mkdir $APP_DIR/dist
+            bes.echo.state $?
+        fi
+        if [ -f "$APP_BIN" ]; then
+            if [ "$1" = "backup" ] || [ "$1" = "-b" ]; then
+                bes.echo.action "backup last build to ${Coff}dist/$(date +%y%m%d)-$APP_NAME${Coff}"
+                mv $APP_BIN $APP_DIR/dist/$(date +%y%m%d)-$APP_NAME
+            else
+                bes.echo.action "removing ${Coff}dist/$APP_NAME${Coff}"
+                rm $APP_BIN
+            fi
+            bes.echo.state $?
+        fi
+        echo "#!/bin/bash" > $APP_BIN
+        bes.echo.action "reading ${Coff}dependencies"
+        if [ -d "$APP_DIR/vendor" ]; then
+            for vendor in $(ls $APP_DIR/vendor/); do
+                if [ "$vendor" != "." ] && [ "$vendor" != ".." ]; then
+                    for project in $(ls $APP_DIR/vendor/$vendor/); do
+                        if [ "$project" != "." ] && [ "$project" != ".." ]; then
+                            for entry in $(ls $APP_DIR/vendor/$vendor/$project/src/); do
+                                local entrypath="$APP_DIR/vendor/$vendor/$project/src/$(basename $entry)"
+                                if [ -f "$entrypath" ] && [ "${entrypath: -3}" = ".sh" ]; then
+                                    tail -n +2 "$entrypath" >> "$APP_BIN"
+                                    bes.echo "      ${Cspe}- ${Cok}appending ${Cusa}$vendorName/$project/${Coff}src/$(basename $entry)"
+                                fi
+                            done
+                        fi
+                    done
+                fi
+            done
+        else
+            bes.echo "     no dependencies, did you forget to run bes-build update ?"
+        fi
+        bes.echo.state 0
+        
+        bes.echo.action "reading ${Coff}src/"
+        for entry in "$APP_DIR/src"/*.sh; do
+            if [ "$(basename $entry)" != "main.sh" ]; then
+                bes.echo "      ${Cspe}- ${Cok}appending ${Coff}src/$(basename $entry)"
+                tail -n +2 "$entry" >> "$APP_BIN"
+            fi
+        done
+        if [ -f "$APP_DIR/src/main.sh" ]; then
+            tail -n +2 "$APP_DIR/src/main.sh" >> "$APP_BIN"
+            bes.echo "      ${Cspe}- ${Cok}appending ${Coff}src/main.sh"
+        fi
+        bes.echo.state 0
+        bes.echo.action "set execution mode"
+        chmod +x $APP_BIN
+        done=$?
+        bes.echo.state $done
+        bes.echo.rs $done
+    else
+        bes.echo.error "no src/ directory. exit"
+        bes.echo.state 1
+    fi
 }
 
 BES_LIB="echo install ini"
@@ -668,7 +674,7 @@ function bes.usage ()
 # @date     2017-06-16 04:38:52 CET
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      BES_VERSION=0.6
+      BES_VERSION=0.7
          BES_NAME="bes-build"
           BES_URL="https://git.pluie.org/meta-tech/$BES_NAME/raw/latest/dist/$BES_NAME"
           APP_DIR=$(pwd)

@@ -1,13 +1,13 @@
 bes-build
 =========
 
-**bes-build** is a bash script to build bash program.  
+**bes-build** is a small bash bes application to build bash program.  
 the building process simply consist to append shell script files from your `src/` project directory 
 into a single `dist/project` executable file
 
 
 since version **0.5** **bes-build** attempt to be a *dependency manager* like `composer` (for php projects) but in a more extra-light way
-
+since version **07** **bes-build** is able to manage his own dependencies on self building process
 
 ### Install
 

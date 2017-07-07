@@ -7,7 +7,7 @@
 # @date     2017-06-16 04:38:52 CET
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      BES_VERSION=0.6
+      BES_VERSION=0.7
          BES_NAME="bes-build"
           BES_URL="https://git.pluie.org/meta-tech/$BES_NAME/raw/latest/dist/$BES_NAME"
           APP_DIR=$(pwd)

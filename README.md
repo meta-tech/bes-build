@@ -6,8 +6,8 @@ the building process simply consist to append shell script files from your `src/
 into a single `dist/project` executable file
 
 
-since version **0.5** **bes-build** attempt to be a *dependency manager* like `composer` (for php projects) but in a more extra-light way
-since version **07** **bes-build** is able to manage his own dependencies on self building process
+since version **0.5** **bes-build** attempt to be a *dependency manager* like `composer` (for php projects) but in a more extra-light way  
+since version **0.7** **bes-build** is able to manage his own dependencies on self building process
 
 ### Install
 

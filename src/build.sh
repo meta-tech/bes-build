@@ -20,7 +20,35 @@ function bes.build ()
             fi
             echo.state $?
         fi
-        echo "#!/bin/bash" > $APP_BIN
+        echo "#!/bin/bash
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BES_BOOT=
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function bes.exists () { 
+    declare -f \$1 > /dev/null
+    #~ [ x\$(type -t \$1) = xfunction ]; 
+}
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function bes.boot ()
+{
+    for fn in \$BES_BOOT; do
+        if bes.exists  \$fn.boot; then
+            \$fn.boot
+        fi
+    done
+}
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function bes.reg ()
+{
+    local sep=\" \"
+    if [ -z \"\$BES_BOOT\" ]; then
+        sep=\"\"
+    fi
+    BES_BOOT=\$BES_BOOT\$sep\$1
+}
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+" > $APP_BIN
+        #~ echo "#!/bin/bash" > $APP_BIN
         echo.action "reading ${Coff}dependencies"
         if [ -d "$APP_DIR/vendor" ]; then
             for vendor in $(ls $APP_DIR/vendor/); do
@@ -50,6 +78,8 @@ function bes.build ()
                 tail -n +2 "$entry" >> "$APP_BIN"
             fi
         done
+        echo "# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bes.boot" >> "$APP_BIN"
         if [ -f "$APP_DIR/src/main.sh" ]; then
             tail -n +2 "$APP_DIR/src/main.sh" >> "$APP_BIN"
             echo.msg "      ${Cspe}- ${Cok}appending ${Coff}src/main.sh"

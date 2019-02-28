@@ -95,3 +95,54 @@ bes.boot" >> "$APP_BIN"
         echo.state 1
     fi
 }
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function bes.build.install ()
+{
+    local path="/usr/share/bes/colors.ini"
+    if [ ! -f "$path" ]; then
+        local dir=$(dirname "$path")
+        if [ ! -d "$dir" ]; then
+            echo.action "Creating default bes share dir" "$Cspe$dir$Cofff"
+            sudo mkdir -p "$dir"
+            echo.state $?
+        fi
+        echo.action "Installing default colors file" "$Cspe$path$Cofff"
+        local tmp=$(mktemp)
+        echo "[set]
+#           background    foreground
+#           R   G   B      R   G   B
+head     =  53 114 160    195 223 255
+headsep  =  53 114 160    252 212 102
+
+[bg]
+#           background
+#           R   G   B
+done     =  63 172 138
+fail     = 172  63  85
+
+[fg]
+#           foreground
+#           R   G   B
+title    = 133  92 181
+headline =  22  74 133
+sep      =  80  80  80
+err      = 194  48  64
+val      = 255 175  95
+key      =  40 168 134
+action   = 106 183 241 
+symbol   = 255 175  95
+item     =  92 147 181
+usa      = 255 172   0
+spe      = 255 214 166
+opt      =  94 215 255
+com      = 175 135 175
+text     =   0 132 101
+meta     =  39 100 170" > "$tmp"
+        sudo mv "$tmp" "$path"
+        echo.state $?
+    else
+        echo.action "Installing default colors file" "$Cspe$path$Cofff"
+        echo.error "file already exists, do not rewrite."
+        echo.state 1
+    fi
+}

@@ -66,7 +66,7 @@ to use **bes-build** like a dependency manager, you need a `bes.ini` file in you
 
 ```ini  
 [require]
-bes.echo    = 1.1
+bes.echo    = 1.3
 ```
  
 then you can run the `update` command before building
@@ -99,7 +99,7 @@ if you intend to release your lib as a bes dependency you must provide a bes.ini
 [project]
 vendor      = bes
 name        = echo
-version     = 1.1
+version     = 1.3
 license     = "GNU GPL v3"
 author      = a-Sansara
 type        = library

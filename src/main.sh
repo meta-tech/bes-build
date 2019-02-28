@@ -7,7 +7,7 @@
 # @date     2017-06-16 04:38:52 CET
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      BES_VERSION=0.9
+      BES_VERSION=0.10
          BES_NAME="bes-build"
           BES_URL="https://git.pluie.org/meta-tech/$BES_NAME/raw/latest/dist/$BES_NAME"
           APP_DIR=$(pwd)
@@ -23,7 +23,7 @@ function bes.main ()
         echo.app "$BES_NAME" "$BES_VERSION"
         echo
         if   [ "$1" = "install" ] || [ "$1" = "-i" ]; then
-            bes.install "$BES_NAME" "$BES_URL" "$2"
+            bes.install "$BES_NAME" "$BES_URL" "$2" "bes.build.install"
         elif [ "$1" = "help" ] || [ "$1" = "-h" ]; then
             bes.usage
         elif [ "$1" = "update" ] || [ "$1" = "-u" ]; then

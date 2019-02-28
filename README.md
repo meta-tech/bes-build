@@ -106,4 +106,7 @@ type        = library
 homepage    = "https://git.pluie.org/meta-tech/bes-echo"
 description = "bash bes display utility library"
 keywords    = "bash, bes"
+
+[require]
+bes.color   = 1.3
 ```

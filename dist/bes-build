@@ -245,7 +245,7 @@ function echo.app ()
     local     msg=${1:-''}
     local version=${2:-''}
     local  author=${3:-'a-Sansara'}
-    local license=${3:-'GNU GPL v3'}
+    local license=${4:-'GNU GPL v3'}
     if [ ! -z "$2" ]; then
         msg="$msg ${Cval}v$version"
     fi
@@ -604,7 +604,7 @@ function bes.build ()
         if [ ! -d "$APP_DIR/dist" ]; then
             echo.action "creating dist directory"
             mkdir $APP_DIR/dist
-            cho.state $?
+            echo.state $?
         fi
         if [ -f "$APP_BIN" ]; then
             if [ "$1" = "backup" ] || [ "$1" = "-b" ]; then
@@ -738,12 +738,12 @@ meta     =  39 100 170" > "$tmp"
         echo.state $?
     else
         echo.action "Installing default colors file" "$Cspe$path$Cofff"
-        echo.error "file already exists. do not rewrite"
+        echo.error "file already exists, do not rewrite."
         echo.state 1
     fi
 }
 
-BES_LIB="color echo install ini dep1 dep2"
+BES_LIB="color echo install ini service dep1 dep2"
 BES_LOADED_LIB=
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function bes.inlist ()
@@ -941,7 +941,7 @@ bes.boot
 # @date     2017-06-16 04:38:52 CET
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      BES_VERSION=0.10
+      BES_VERSION=0.11
          BES_NAME="bes-build"
           BES_URL="https://git.pluie.org/meta-tech/$BES_NAME/raw/latest/dist/$BES_NAME"
           APP_DIR=$(pwd)

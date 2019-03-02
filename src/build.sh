@@ -8,7 +8,7 @@ function bes.build ()
         if [ ! -d "$APP_DIR/dist" ]; then
             echo.action "creating dist directory"
             mkdir $APP_DIR/dist
-            cho.state $?
+            echo.state $?
         fi
         if [ -f "$APP_BIN" ]; then
             if [ "$1" = "backup" ] || [ "$1" = "-b" ]; then

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BES_LIB="color echo install ini service dep1 dep2"
+BES_LIB="color echo install ini service secure dep1 dep2"
 BES_LOADED_LIB=
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function bes.inlist ()

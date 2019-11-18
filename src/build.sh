@@ -4,7 +4,7 @@
 function bes.build ()
 {
     echo.title "building project" "$APP_NAME"
-    if [ -d "$APP_DIR/src" ]; then 
+    if [ -d "$APP_DIR/src" ]; then
         if [ ! -d "$APP_DIR/dist" ]; then
             echo.action "creating dist directory"
             mkdir $APP_DIR/dist
@@ -24,9 +24,9 @@ function bes.build ()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 BES_BOOT=
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function bes.exists () { 
+function bes.exists () {
     declare -f \$1 > /dev/null
-    #~ [ x\$(type -t \$1) = xfunction ]; 
+    #~ [ x\$(type -t \$1) = xfunction ];
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function bes.boot ()
@@ -70,7 +70,7 @@ function bes.reg ()
             echo.msg "     no dependencies, did you forget to run bes-build update ?"
         fi
         echo.state 0
-        
+
         echo.action "reading ${Coff}src/"
         for entry in "$APP_DIR/src"/*.sh; do
             if [ "$(basename $entry)" != "main.sh" ]; then
@@ -129,7 +129,7 @@ sep      =  80  80  80
 err      = 194  48  64
 val      = 255 175  95
 key      =  40 168 134
-action   = 106 183 241 
+action   = 106 183 241
 symbol   = 255 175  95
 item     =  92 147 181
 usa      = 255 172   0

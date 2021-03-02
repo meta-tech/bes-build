@@ -2,9 +2,9 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 BES_BOOT=
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function bes.exists () { 
+function bes.exists () {
     declare -f $1 > /dev/null
-    #~ [ x$(type -t $1) = xfunction ]; 
+    #~ [ x$(type -t $1) = xfunction ];
 }
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function bes.boot ()
@@ -743,6 +743,101 @@ meta     =  39 100 170" > "$tmp"
     fi
 }
 
+function bes.build.new () {
+    local prj=${1}
+    echo.title "creating new project" "$prj"
+    if [ -d "$APP_DIR/$prj" ]; then
+        echo.error "directory $prj already exists" 1
+    else
+        echo.action "creating directory" "$prj" "*" "Cusa"
+        mkdir "$APP_DIR/$prj"
+        echo.state $?
+        echo.action "creating project config file" "bes.ini" "*" "Cusa"
+        echo -e "[project]
+vendor      = 
+name        = $prj
+version     = 0.1
+license     = \"GNU GPL v3\"
+author      = 
+type        = application
+homepage    = 
+description = \"bash bes $prj application\"
+keywords    = \"bash $prj\"
+
+[require]
+bes.install = 1.4
+" > "$APP_DIR/$prj/bes.ini"
+        echo.state $?
+        echo.action "Creating directory" "src" "*" "Cusa"
+        mkdir $APP_DIR/$prj/src
+        echo.state $?
+        echo.action "Adding default templates" "main" "*" "Cusa"
+        echo "#!/bin/bash
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      BES_VERSION=0.1
+       BES_AUTHOR=me
+      BES_LICENSE=MIT
+         BES_NAME=\"$prj\"
+          BES_URL=\"https://your.forge.git/vendor/\$BES_NAME/raw/latest/dist/\$BES_NAME\"
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function $prj.main ()
+{
+    echo.msg \"hello bes\" \"\$Citem\"
+    echo.rs \$?
+    echo
+}
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function bes.main ()
+{
+    if   [ \"\$1\" = \"version\" ] || [ \"\$1\" = \"-v\" ]; then
+        echo \$BES_VERSION
+    else
+        echo.app \"\$BES_NAME\" \"\$BES_VERSION\" \"\$BES_AUTHOR\" \"\$BES_LICENSE\"
+        echo
+        if   [ \"\$1\" = \"install\" ] || [ \"\$1\" = \"-i\" ]; then
+            bes.install \"\$BES_NAME\" \"\$BES_URL\" \"\$2\"
+        elif [ \"\$1\" = \"help\" ] || [ \"\$1\" = \"-h\" ]; then
+            $prj.usage
+        else
+            $prj.main
+        fi
+        echo
+    fi
+}
+bes.main \$*
+" > "$APP_DIR/$prj/src/main.sh"
+        echo.state $?
+        echo.action "Adding default template" "usage" "*" "Cusa"
+echo "#!/bin/bash
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function $prj.usage ()
+{
+    echo -e \"     \${Cusa}Usage :\${Coff}\n
+    \${Ccom}\tInstall or update \$BES_NAME on specified BINDIR directory or in /usr/local/bin directory
+    \${Cspe}\t\$BES_NAME  \${Copt}-i\${Ctext}, \${Copt}install        \${Copt}[ \${Ctext}BINDIR\${Copt} ]
+    \${Ccom}\tDisplay program version
+    \${Cspe}\t\$BES_NAME  \${Copt}-v\${Ctext}, \${Copt}version
+    \${Ccom}\tDisplay this help
+    \${Cspe}\t\$BES_NAME  \${Copt}-h\${Ctext}, \${Copt}help\"
+
+    echo -e \"${Coff}\"
+}
+
+" > "$APP_DIR/$prj/src/usage.sh"
+        echo.state $?
+        echo.rs $?
+        echo
+    fi
+}
+
+function bes.build.require () {
+    local dep=${1}
+    echo.msg "coming soon"
+    echo.rs 1
+}
+
 BES_LIB="color echo install ini service secure dep1 dep2"
 BES_LOADED_LIB=
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -918,16 +1013,20 @@ function bes.update ()
 function bes.usage ()
 {
     echo -e "     ${Cusa}Usage :${Coff}\n
+    ${Ccom}\tCreate new bes project
+    ${Cspe}\t$BES_NAME  ${Copt}-n${Ctext}, ${Copt}new            ${Copt}[ ${Ctext}PROJECT_NAME${Copt} ]
+    ${Ccom}\tUpdate current project dependencies
+    ${Cspe}\t$BES_NAME  ${Copt}-u${Ctext}, ${Copt}update
     ${Ccom}\tBuild current project (overwrite existing build)
-    ${Cspe}\t$APP_NAME  ${Copt}
+    ${Cspe}\t$BES_NAME  ${Copt}
     ${Ccom}\tBuild current project and backup existing build
-    ${Cspe}\t$APP_NAME  ${Copt}-b${Ctext}, ${Copt}backup
+    ${Cspe}\t$BES_NAME  ${Copt}-b${Ctext}, ${Copt}backup
     ${Ccom}\tInstall or update $APP_NAME on specified BINDIR directory or in /usr/local/bin directory
-    ${Cspe}\t$APP_NAME  ${Copt}-i${Ctext}, ${Copt}install        ${Copt}[ ${Ctext}BINDIR${Copt} ]
+    ${Cspe}\t$BES_NAME  ${Copt}-i${Ctext}, ${Copt}install        ${Copt}[ ${Ctext}BINDIR${Copt} ]
     ${Ccom}\tDisplay program version
-    ${Cspe}\t$APP_NAME  ${Copt}-v${Ctext}, ${Copt}version
+    ${Cspe}\t$BES_NAME  ${Copt}-v${Ctext}, ${Copt}version
     ${Ccom}\tDisplay this help
-    ${Cspe}\t$APP_NAME  ${Copt}-h${Ctext}, ${Copt}help"
+    ${Cspe}\t$BES_NAME  ${Copt}-h${Ctext}, ${Copt}help"
 
     echo -e "${Coff}"
 }
@@ -941,7 +1040,7 @@ bes.boot
 # @date     2017-06-16 04:38:52 CET
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      BES_VERSION=0.12
+      BES_VERSION=0.13
          BES_NAME="bes-build"
           BES_URL="https://git.pluie.org/meta-tech/$BES_NAME/raw/latest/dist/$BES_NAME"
           APP_DIR=$(pwd)
@@ -956,14 +1055,30 @@ function bes.main ()
     else
         echo.app "$BES_NAME" "$BES_VERSION"
         echo
+        enusage=0
         if   [ "$1" = "install" ] || [ "$1" = "-i" ]; then
             bes.install "$BES_NAME" "$BES_URL" "$2" "bes.build.install"
         elif [ "$1" = "help" ] || [ "$1" = "-h" ]; then
-            bes.usage
+            enusage=1
         elif [ "$1" = "update" ] || [ "$1" = "-u" ]; then
             bes.update
+        elif [ "$1" = "new" ] || [ "$1" = "-n" ]; then
+            if [ ! -z "$2" ]; then
+                bes.build.new $2
+            else
+                enusage=1
+            fi
+        elif [ "$1" = "require" ] || [ "$1" = "-r" ]; then
+            if [ ! -z "$2" ]; then
+                bes.build.require $2
+            else
+                enusage=1
+            fi
         elif [ -z "$1" ] || [ "$1" = "backup" ] || [ "$1" = "-b" ]; then
             bes.build "$1"
+        fi
+        if [ "$enusage" = "1" ]; then
+            bes.usage
         fi
         echo
     fi
